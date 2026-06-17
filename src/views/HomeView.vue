@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-
     <!-- ═══ NAVBAR ═══ -->
     <nav class="navbar">
       <div class="nav-container">
@@ -20,7 +19,12 @@
         </div>
 
         <!-- Hamburguesa — solo mobile -->
-        <button class="hamburger" @click="menuAbierto = !menuAbierto" :aria-expanded="menuAbierto" aria-label="Menú">
+        <button
+          class="hamburger"
+          @click="menuAbierto = !menuAbierto"
+          :aria-expanded="menuAbierto"
+          aria-label="Menú"
+        >
           <span :class="{ rotar_top: menuAbierto }"></span>
           <span :class="{ ocultar: menuAbierto }"></span>
           <span :class="{ rotar_bot: menuAbierto }"></span>
@@ -33,8 +37,12 @@
         <a href="#" class="drawer-link" @click="menuAbierto = false">Emprendimientos</a>
         <a href="#" class="drawer-link" @click="menuAbierto = false">Publicaciones</a>
         <div class="drawer-btns">
-          <router-link to="/login" class="btn-outline w-full" @click="menuAbierto = false">Iniciar sesión</router-link>
-          <router-link to="/registro" class="btn-solid w-full" @click="menuAbierto = false">Registrarse</router-link>
+          <router-link to="/login" class="btn-outline w-full" @click="menuAbierto = false"
+            >Iniciar sesión</router-link
+          >
+          <router-link to="/registro" class="btn-solid w-full" @click="menuAbierto = false"
+            >Registrarse</router-link
+          >
         </div>
       </div>
     </nav>
@@ -43,20 +51,35 @@
     <!-- ═══ HERO ═══ -->
     <section class="hero">
       <span class="hero-badge">Municipalidad de Lucas González</span>
-      <h1>Descubrí los emprendimientos<br class="br-desktop"> de tu ciudad</h1>
-      <p>Apoyá a los emprendedores locales de Entre Ríos y encontrá productos y servicios cerca tuyo.</p>
+      <h1>
+        Descubrí los emprendimientos<br class="br-desktop" />
+        de tu ciudad
+      </h1>
+      <p>
+        Apoyá a los emprendedores locales de Entre Ríos y encontrá productos y servicios cerca tuyo.
+      </p>
       <div class="search-wrap">
         <i class="ti ti-search"></i>
-        <input v-model="busqueda" type="text" placeholder="Buscar emprendimiento o rubro..." @input="filtrar" />
+        <input
+          v-model="busqueda"
+          type="text"
+          placeholder="Buscar emprendimiento o rubro..."
+          @input="filtrar"
+        />
         <button @click="filtrar">Buscar</button>
       </div>
     </section>
 
     <!-- ═══ STATS ═══ -->
     <div class="stats">
-      <div class="stat"><strong>{{ emprendimientos.length }}+</strong><span>Emprendimientos</span></div>
+      <div class="stat">
+        <strong>{{ emprendimientos.length }}+</strong><span>Emprendimientos</span>
+      </div>
       <div class="sep"></div>
-      <div class="stat"><strong>{{ rubros.length }}</strong><span>Rubros</span></div>
+      <div class="stat">
+        <strong>{{ rubros.length }}</strong
+        ><span>Rubros</span>
+      </div>
       <div class="sep"></div>
       <div class="stat"><strong>Lucas González</strong><span>Entre Ríos</span></div>
     </div>
@@ -64,12 +87,18 @@
     <!-- ═══ FILTROS ═══ -->
     <div class="filtros-wrap">
       <div class="filtros">
-        <button class="chip" :class="{ activo: rubroActivo === '' }" @click="limpiarFiltro">Todos</button>
+        <button class="chip" :class="{ activo: rubroActivo === '' }" @click="limpiarFiltro">
+          Todos
+        </button>
         <button
-          v-for="r in rubros" :key="r"
-          class="chip" :class="{ activo: rubroActivo === r }"
+          v-for="r in rubros"
+          :key="r"
+          class="chip"
+          :class="{ activo: rubroActivo === r }"
           @click="seleccionarRubro(r)"
-        >{{ r }}</button>
+        >
+          {{ r }}
+        </button>
       </div>
     </div>
 
@@ -80,7 +109,7 @@
         <p>Cargando emprendimientos...</p>
       </div>
       <div v-else-if="filtrados.length === 0" class="estado-vacio">
-        <i class="ti ti-mood-empty" style="font-size:36px;color:#ccc"></i>
+        <i class="ti ti-mood-empty" style="font-size: 36px; color: #ccc"></i>
         <p>No se encontraron emprendimientos.</p>
       </div>
       <div v-else class="grid">
@@ -94,8 +123,12 @@
             <h3>{{ emp.nombre }}</h3>
             <p>{{ emp.descripcion || 'Sin descripción disponible.' }}</p>
             <div class="card-footer">
-              <span><i class="ti ti-user"></i> {{ emp.emprendedor_id?.nombre || 'Emprendedor' }}</span>
-              <button>Ver más →</button>
+              <span
+                ><i class="ti ti-user"></i> {{ emp.emprendedor_id?.nombre || 'Emprendedor' }}</span
+              >
+              <button @click="router.push(`/emprendedor/${emp.emprendedor_id?.id}`)">
+                Ver perfil →
+              </button>
             </div>
           </div>
         </div>
@@ -108,12 +141,14 @@
       <p>© 2026 Municipalidad de Lucas González · Entre Ríos</p>
       <p class="footer-sub">Plataforma oficial de emprendimientos locales</p>
     </footer>
-
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const emprendimientos = ref([])
 const filtrados = ref([])
@@ -125,7 +160,7 @@ const menuAbierto = ref(false)
 
 onMounted(async () => {
   const res = await fetch(
-    '/api/items/emprendimientos?filter[estado][_eq]=aprobado&fields[]=id,nombre,rubro,descripcion,logo,emprendedor_id.nombre',
+    '/api/items/emprendimientos?filter[estado][_eq]=aprobado&fields[]=id,nombre,rubro,descripcion,logo,emprendedor_id.id,emprendedor_id.nombre',
   )
   const data = await res.json()
   emprendimientos.value = data.data
@@ -136,22 +171,39 @@ onMounted(async () => {
 
 function filtrar() {
   filtrados.value = emprendimientos.value.filter((emp) => {
-    const mb = busqueda.value === '' ||
+    const mb =
+      busqueda.value === '' ||
       emp.nombre?.toLowerCase().includes(busqueda.value.toLowerCase()) ||
       emp.rubro?.toLowerCase().includes(busqueda.value.toLowerCase())
     const mr = rubroActivo.value === '' || emp.rubro === rubroActivo.value
     return mb && mr
   })
 }
-function limpiarFiltro() { rubroActivo.value = ''; filtrar() }
-function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
+function limpiarFiltro() {
+  rubroActivo.value = ''
+  filtrar()
+}
+function seleccionarRubro(r) {
+  rubroActivo.value = r
+  filtrar()
+}
 </script>
 
 <style scoped>
 /* ── Reset base ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-.home { min-height: 100vh; background: #f2f2f0; font-family: inherit; }
+.home {
+  min-height: 100vh;
+  background: #f2f2f0;
+  font-family: inherit;
+}
 
 /* ══════════════════════
    NAVBAR
@@ -174,7 +226,11 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   gap: 24px;
 }
 
-.nav-logo { height: 38px; display: block; flex-shrink: 0; }
+.nav-logo {
+  height: 38px;
+  display: block;
+  flex-shrink: 0;
+}
 
 .nav-links {
   display: flex;
@@ -188,9 +244,15 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   color: #555;
   text-decoration: none;
 }
-.nav-link:hover { color: #1a3d2b; }
+.nav-link:hover {
+  color: #1a3d2b;
+}
 
-.nav-actions { display: flex; gap: 10px; flex-shrink: 0; }
+.nav-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
 
 .btn-outline {
   font-size: 13px;
@@ -202,7 +264,9 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   border: 1.5px solid #1a3d2b;
   transition: background 0.15s;
 }
-.btn-outline:hover { background: #f0f8f3; }
+.btn-outline:hover {
+  background: #f0f8f3;
+}
 
 .btn-solid {
   font-size: 13px;
@@ -214,7 +278,9 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   background: #1a3d2b;
   transition: background 0.15s;
 }
-.btn-solid:hover { background: #2e7d52; }
+.btn-solid:hover {
+  background: #2e7d52;
+}
 
 /* Hamburguesa */
 .hamburger {
@@ -235,13 +301,21 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   height: 2px;
   background: #1a3d2b;
   border-radius: 2px;
-  transition: transform 0.25s ease, opacity 0.2s;
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s;
   transform-origin: center;
 }
 
-.rotar_top  { transform: translateY(7px) rotate(45deg) !important; }
-.ocultar    { opacity: 0 !important; }
-.rotar_bot  { transform: translateY(-7px) rotate(-45deg) !important; }
+.rotar_top {
+  transform: translateY(7px) rotate(45deg) !important;
+}
+.ocultar {
+  opacity: 0 !important;
+}
+.rotar_bot {
+  transform: translateY(-7px) rotate(-45deg) !important;
+}
 
 /* Drawer mobile */
 .mobile-drawer {
@@ -254,7 +328,9 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   transition: max-height 0.3s ease;
 }
 
-.mobile-drawer.abierto { max-height: 500px; }
+.mobile-drawer.abierto {
+  max-height: 500px;
+}
 
 .drawer-link {
   display: block;
@@ -265,7 +341,10 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   text-decoration: none;
   border-bottom: 1px solid #f5f5f5;
 }
-.drawer-link:hover { background: #f8fdf9; color: #1a3d2b; }
+.drawer-link:hover {
+  background: #f8fdf9;
+  color: #1a3d2b;
+}
 
 .drawer-btns {
   display: flex;
@@ -274,12 +353,16 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   padding: 16px 24px 20px;
 }
 
-.w-full { display: block; text-align: center; width: 100%; }
+.w-full {
+  display: block;
+  text-align: center;
+  width: 100%;
+}
 
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 299;
 }
 
@@ -325,7 +408,9 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   margin-right: auto;
 }
 
-.br-desktop { display: block; }
+.br-desktop {
+  display: block;
+}
 
 .search-wrap {
   display: flex;
@@ -338,7 +423,11 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   margin: 0 auto;
 }
 
-.search-wrap i { font-size: 18px; color: #aaa; flex-shrink: 0; }
+.search-wrap i {
+  font-size: 18px;
+  color: #aaa;
+  flex-shrink: 0;
+}
 
 .search-wrap input {
   flex: 1;
@@ -362,7 +451,9 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   flex-shrink: 0;
   transition: background 0.15s;
 }
-.search-wrap button:hover { background: #2e7d52; }
+.search-wrap button:hover {
+  background: #2e7d52;
+}
 
 /* ══════════════════════
    STATS
@@ -377,11 +468,27 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   flex-wrap: wrap;
 }
 
-.stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.stat strong { font-size: 20px; font-weight: 700; color: #fff; }
-.stat span { font-size: 12px; color: #6a9e83; }
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.stat strong {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+.stat span {
+  font-size: 12px;
+  color: #6a9e83;
+}
 
-.sep { width: 1px; height: 32px; background: #2a4d38; }
+.sep {
+  width: 1px;
+  height: 32px;
+  background: #2a4d38;
+}
 
 /* ══════════════════════
    FILTROS
@@ -393,7 +500,9 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
-.filtros-wrap::-webkit-scrollbar { display: none; }
+.filtros-wrap::-webkit-scrollbar {
+  display: none;
+}
 
 .filtros {
   display: flex;
@@ -416,13 +525,22 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   transition: all 0.15s;
   flex-shrink: 0;
 }
-.chip.activo { background: #1a3d2b; color: #fff; border-color: #1a3d2b; }
-.chip:hover:not(.activo) { border-color: #1a3d2b; color: #1a3d2b; }
+.chip.activo {
+  background: #1a3d2b;
+  color: #fff;
+  border-color: #1a3d2b;
+}
+.chip:hover:not(.activo) {
+  border-color: #1a3d2b;
+  color: #1a3d2b;
+}
 
 /* ══════════════════════
    GRID
 ══════════════════════ */
-.contenido { padding: 20px 24px 48px; }
+.contenido {
+  padding: 20px 24px 48px;
+}
 
 .grid {
   display: grid;
@@ -437,13 +555,32 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   overflow: hidden;
   transition: box-shadow 0.2s;
 }
-.card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+.card:hover {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
 
-.card-img { height: 160px; background: #eaf3de; overflow: hidden; }
-.card-img img { width: 100%; height: 100%; object-fit: cover; }
-.card-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+.card-img {
+  height: 160px;
+  background: #eaf3de;
+  overflow: hidden;
+}
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
 
-.card-body { padding: 16px; }
+.card-body {
+  padding: 16px;
+}
 
 .card-rubro {
   display: inline-block;
@@ -456,7 +593,12 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   margin-bottom: 10px;
 }
 
-.card-body h3 { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+.card-body h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
 
 .card-body p {
   font-size: 13px;
@@ -477,22 +619,47 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   border-top: 1px solid #f0f0f0;
 }
 
-.card-footer span { font-size: 12px; color: #aaa; display: flex; align-items: center; gap: 4px; }
-.card-footer button { font-size: 13px; color: #2e7d52; font-weight: 600; background: none; border: none; cursor: pointer; }
+.card-footer span {
+  font-size: 12px;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.card-footer button {
+  font-size: 13px;
+  color: #2e7d52;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 
 /* Loading / empty */
-.estado-vacio { text-align: center; padding: 64px 24px; color: #888; }
-.estado-vacio p { margin-top: 12px; font-size: 14px; }
+.estado-vacio {
+  text-align: center;
+  padding: 64px 24px;
+  color: #888;
+}
+.estado-vacio p {
+  margin-top: 12px;
+  font-size: 14px;
+}
 
 .spinner {
-  width: 32px; height: 32px;
+  width: 32px;
+  height: 32px;
   border: 3px solid #e0e0e0;
   border-top-color: #2e7d52;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ══════════════════════
    FOOTER
@@ -515,43 +682,86 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
   margin-bottom: 8px;
 }
 
-.footer p { font-size: 13px; color: #8ab5a0; }
-.footer-sub { font-size: 12px; color: #4d7a63 !important; }
+.footer p {
+  font-size: 13px;
+  color: #8ab5a0;
+}
+.footer-sub {
+  font-size: 12px;
+  color: #4d7a63 !important;
+}
 
 /* ══════════════════════════════════
    RESPONSIVE — Tablet ≤ 768px
 ══════════════════════════════════ */
 @media (max-width: 768px) {
   /* Navbar: ocultar links/botones desktop, mostrar hamburguesa */
-  .nav-links  { display: none; }
-  .nav-actions { display: none; }
-  .hamburger  { display: flex; }
-  .mobile-drawer { display: flex; }
+  .nav-links {
+    display: none;
+  }
+  .nav-actions {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .mobile-drawer {
+    display: flex;
+  }
 
-  .hero { padding: 48px 20px 56px; }
-  .hero h1 { font-size: 28px; }
-  .br-desktop { display: none; }
+  .hero {
+    padding: 48px 20px 56px;
+  }
+  .hero h1 {
+    font-size: 28px;
+  }
+  .br-desktop {
+    display: none;
+  }
 
-  .stats { gap: 24px; }
-  .sep { display: none; }
+  .stats {
+    gap: 24px;
+  }
+  .sep {
+    display: none;
+  }
 
-  .filtros-wrap { padding: 16px 20px 0; }
-  .filtros { flex-wrap: nowrap; } /* scroll horizontal */
+  .filtros-wrap {
+    padding: 16px 20px 0;
+  }
+  .filtros {
+    flex-wrap: nowrap;
+  } /* scroll horizontal */
 
-  .contenido { padding: 16px 20px 40px; }
-  .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .contenido {
+    padding: 16px 20px 40px;
+  }
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
 
-  .card-img { height: 120px; }
-  .card-body { padding: 12px; }
-  .card-body h3 { font-size: 14px; }
+  .card-img {
+    height: 120px;
+  }
+  .card-body {
+    padding: 12px;
+  }
+  .card-body h3 {
+    font-size: 14px;
+  }
 }
 
 /* ══════════════════════════════════
    RESPONSIVE — Mobile ≤ 480px
 ══════════════════════════════════ */
 @media (max-width: 480px) {
-  .hero h1 { font-size: 24px; }
-  .hero p  { font-size: 14px; }
+  .hero h1 {
+    font-size: 24px;
+  }
+  .hero p {
+    font-size: 14px;
+  }
 
   /* Search: vertical */
   .search-wrap {
@@ -560,21 +770,35 @@ function seleccionarRubro(r) { rubroActivo.value = r; filtrar() }
     padding: 12px;
     gap: 10px;
   }
-  .search-wrap i { display: none; }
+  .search-wrap i {
+    display: none;
+  }
   .search-wrap input {
     border: 1.5px solid #d4e6d6;
     border-radius: 8px;
     padding: 10px 12px;
   }
-  .search-wrap button { width: 100%; padding: 12px; }
+  .search-wrap button {
+    width: 100%;
+    padding: 12px;
+  }
 
   /* Stats: 3 en fila igual, más compactos */
-  .stats { padding: 14px 16px; gap: 12px; }
-  .stat strong { font-size: 16px; }
+  .stats {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .stat strong {
+    font-size: 16px;
+  }
 
   /* Grid: 1 columna */
-  .grid { grid-template-columns: 1fr; }
+  .grid {
+    grid-template-columns: 1fr;
+  }
 
-  .card-img { height: 150px; }
+  .card-img {
+    height: 150px;
+  }
 }
 </style>
